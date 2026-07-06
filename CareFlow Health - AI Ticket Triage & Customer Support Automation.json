@@ -1,0 +1,310 @@
+{
+  "name": "CareFlow Health - AI Ticket Triage & Customer Support Automation",
+  "nodes": [
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1.1,
+      "position": [
+        -64,
+        176
+      ],
+      "id": "c54bb481-ef67-4ab5-9543-011130d6662b",
+      "name": "Google Gemini Chat Model",
+      "credentials": {
+        "googlePalmApi": {
+          "id": null,
+          "name": "",
+          "__aiGatewayManaged": true
+        }
+      }
+    },
+    {
+      "parameters": {
+        "pollTimes": {
+          "item": [
+            {
+              "mode": "everyMinute"
+            }
+          ]
+        },
+        "documentId": {
+          "__rl": true,
+          "value": "1Ys-2k7bu1ZHTkgYmuiy1UQy6GL7x7cJpZsLpL_RFQXw",
+          "mode": "list",
+          "cachedResultName": "CareFlow Health Support Tickets",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1Ys-2k7bu1ZHTkgYmuiy1UQy6GL7x7cJpZsLpL_RFQXw/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 1330099145,
+          "mode": "list",
+          "cachedResultName": "Form responses 1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1Ys-2k7bu1ZHTkgYmuiy1UQy6GL7x7cJpZsLpL_RFQXw/edit#gid=1330099145"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheetsTrigger",
+      "typeVersion": 1,
+      "position": [
+        -208,
+        0
+      ],
+      "id": "ec54f810-1414-4c2f-8080-3337aac5abea",
+      "name": "New Support Ticket",
+      "credentials": {
+        "googleSheetsTriggerOAuth2Api": {
+          "id": "WWmXB9AHjLs5Zju7",
+          "name": "Google Sheets Trigger OAuth2 API"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=You are an AI triage assistant for CareFlow Health.\n\nYour task is to analyze the support request.\n\nRules:\n\n- Return ONLY valid JSON.\n- Do NOT include explanations.\n- Do NOT wrap the JSON inside markdown.\n- Do NOT say \"Based on the information provided...\"\n- Never invent actions like refunds or account updates.\n- If information is missing, state \"Unknown\".\n\nReturn exactly this structure:\n\n{\n  \"customer_name\": \"\",\n  \"summary\": \"\",\n  \"category\": \"\",\n  \"priority\": \"\",\n  \"sentiment\": \"\",\n  \"draft_reply\": \"\"\n}\n\nSupport Ticket:\n\nCustomer Name: John Andrews\n\nEmail: john@example.com\n\nIssue Category: Billing\n\nSubject: Charged Twice\n\nDescription:\nI noticed I was charged twice this month for my subscription.\n\nPriority:\nHigh",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        -32,
+        -16
+      ],
+      "id": "37dc3f31-2d99-41f5-be23-d21b7797fe08",
+      "name": " AI Ticket Analysis"
+    },
+    {
+      "parameters": {
+        "jsCode": "return items.map(item => {\n  let output = item.json.output;\n\n  // Remove markdown code fences if present\n  output = output.replace(/```json/g, \"\").replace(/```/g, \"\").trim();\n\n  const ai = JSON.parse(output);\n\n  return {\n    json: {\n      ...item.json,\n      customer_name: ai.customer_name,\n      summary: ai.summary,\n      category: ai.category,\n      priority: ai.priority,\n      sentiment: ai.sentiment,\n      draft_reply: ai.draft_reply,\n      status: \"Pending\"\n    }\n  };\n});"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        272,
+        0
+      ],
+      "id": "82ba2516-4da6-4ce7-ba3a-2ca6a08c2c48",
+      "name": "Parse AI Response"
+    },
+    {
+      "parameters": {
+        "operation": "appendOrUpdate",
+        "documentId": {
+          "__rl": true,
+          "value": "1Ys-2k7bu1ZHTkgYmuiy1UQy6GL7x7cJpZsLpL_RFQXw",
+          "mode": "list",
+          "cachedResultName": "CareFlow Health Support Tickets",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1Ys-2k7bu1ZHTkgYmuiy1UQy6GL7x7cJpZsLpL_RFQXw/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 1330099145,
+          "mode": "list",
+          "cachedResultName": "Form responses 1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1Ys-2k7bu1ZHTkgYmuiy1UQy6GL7x7cJpZsLpL_RFQXw/edit#gid=1330099145"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Timestamp": "={{ $('New Support Ticket').item.json.Timestamp }}"
+          },
+          "matchingColumns": [
+            "Timestamp"
+          ],
+          "schema": [
+            {
+              "id": "Timestamp",
+              "displayName": "Timestamp",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Question 1 \nFull Name",
+              "displayName": "Question 1 \nFull Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Question 2 \nEmail Address",
+              "displayName": "Question 2 \nEmail Address",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Question 3 \nIssue Category",
+              "displayName": "Question 3 \nIssue Category",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Question 4 \nSubject",
+              "displayName": "Question 4 \nSubject",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Question 5 \nDescribe your issue",
+              "displayName": "Question 5 \nDescribe your issue",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Question 6 \nPriority",
+              "displayName": "Question 6 \nPriority",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "AI Summary",
+              "displayName": "AI Summary",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "AI Category",
+              "displayName": "AI Category",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "AI Sentiment",
+              "displayName": "AI Sentiment",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "AI Draft Reply",
+              "displayName": "AI Draft Reply",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Status",
+              "displayName": "Status",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        464,
+        0
+      ],
+      "id": "a858a9d1-d2af-4d7f-88d1-c8fc19be2447",
+      "name": "Update Support Queue",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "mR7G3fkyNAKp6HvW",
+          "name": "Google Sheets OAuth2 API"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Google Gemini Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": " AI Ticket Analysis",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "New Support Ticket": {
+      "main": [
+        [
+          {
+            "node": " AI Ticket Analysis",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    " AI Ticket Analysis": {
+      "main": [
+        [
+          {
+            "node": "Parse AI Response",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Parse AI Response": {
+      "main": [
+        [
+          {
+            "node": "Update Support Queue",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "versionId": "36da6130-ee4c-49a5-aa5b-522ac0782ad8",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "45760eff812a208f0b24e93091ab705ed2af02048f99eb33160276d1969497bc"
+  },
+  "nodeGroups": [],
+  "id": "voh4qfZT0OfAmkRt",
+  "tags": []
+}
