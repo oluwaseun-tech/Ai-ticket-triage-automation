@@ -138,19 +138,15 @@ A JavaScript Code node converts AI output into structured business data suitable
 
 ## Google Form
 
-![Google Form](screenshots/google form.JPG)
+![Google Form](screenshots/google-form.JPG)
 
 ## Google Sheets
 
-![Google sheets](screenshots/google sheets.JPG)
+![Google sheets](screenshots/google-sheet.JPG)
 
 ## n8n Workflow
 
-*(Insert screenshot)*
-
-## AI Output
-
-![n8n Workflow](screenshots/n8n-workflow.png)
+![Google sheets](screenshots/n8n json.JPG)
 
 ---
 
