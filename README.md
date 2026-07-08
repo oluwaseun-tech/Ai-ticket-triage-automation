@@ -146,7 +146,7 @@ A JavaScript Code node converts AI output into structured business data suitable
 
 ## n8n Workflow
 
-![n8n workflow](screenshots/n8n-json.JPG)
+![n8n workflow](screenshots/n8njson.JPG)
 
 ---
 
