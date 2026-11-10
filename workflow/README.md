@@ -1,11 +1,14 @@
-# Workflow template
+# Workflow export
 
-The n8n JSON in the repository root is sanitised and uses placeholder spreadsheet settings. After importing:
+The repository root contains the sanitised n8n JSON export.
 
-1. Reconnect Google Sheets and Google Gemini credentials using n8n's credential manager.
-2. Select your own test spreadsheet and worksheet in both Google Sheets nodes.
-3. Review the dynamic expressions and field mappings.
-4. Run the test scenarios in [../tests/test-scenarios.md](../tests/test-scenarios.md).
-5. Keep human review in place for all customer-facing drafts.
+Before importing:
 
-Do not commit credentials, private spreadsheet identifiers or real support-ticket records to GitHub.
+1. Reconnect Google Sheets Trigger and Google Sheets credentials in n8n.
+2. Reconnect the Google Gemini credential.
+3. Select your own spreadsheet and form-response tab in both Sheets nodes.
+4. Confirm the incoming form-response column labels match the expressions in the AI Agent prompt.
+5. Review the AI Priority design decision in [../docs/workflow-review.md](../docs/workflow-review.md).
+6. Test the workflow with synthetic tickets before any operational use.
+
+The export intentionally contains placeholders instead of private spreadsheet identifiers and does not include credential references. Never commit credentials, API keys, private spreadsheet identifiers or customer records.
