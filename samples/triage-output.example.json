@@ -1,0 +1,9 @@
+{
+  "customer_name": "Amina Example",
+  "summary": "The customer reports that a recent payment is not reflected against the invoice.",
+  "category": "Billing",
+  "sentiment": "Concerned",
+  "draft_reply": "Thank you for flagging this. A support representative will review the payment record and follow up through the usual support channel.",
+  "status": "Pending",
+  "_note": "Illustrative output only; validate and review it before use."
+}
