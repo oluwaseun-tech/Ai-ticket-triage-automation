@@ -6,5 +6,5 @@
   "Question 4 \nSubject": "Payment not reflected",
   "Question 5 \nDescribe your issue": "I made a payment yesterday, but my account still shows the invoice as unpaid.",
   "Question 6 \nPriority": "Medium",
-  "_note": "Synthetic example. Do not use real customer details."
+  "_note": "Synthetic example only. Do not use real customer details."
 }
