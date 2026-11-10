@@ -1,77 +1,99 @@
 # CareFlow Health — AI-Assisted Support Ticket Triage
 
-**Portfolio project by Oluwaseun Aribisogan**  
+**Portfolio case study by Oluwaseun Aribisogan**  
 **Tools:** n8n · Google Sheets · Google Gemini · JavaScript · JSON · Google Forms
 
-> **Project status:** Portfolio prototype / workflow template. The exported workflow shows the intended automation pattern. Reconnect credentials, select a test spreadsheet, and complete the test checklist before using it. CareFlow Health is a fictional scenario, not a client deployment.
+> **Project status:** Portfolio prototype. The public workflow export has been sanitised and its prompt, parsing and known output mappings have been improved. It still requires account reconnection, field/tab selection and end-to-end testing in the user's own n8n workspace before operational use. CareFlow Health is a fictional scenario, not a client deployment.
 
-## Problem
+## The business problem
 
-Support teams regularly read incoming requests, identify the issue, decide how to categorise it and prepare a first response. Repeating these steps manually can slow initial triage and produce inconsistent ticket records.
+Support teams repeatedly read incoming requests, interpret the issue, assign categories, assess urgency and prepare an initial response. When these steps are handled manually, ticket triage can become inconsistent and time-consuming.
 
-## Proposed solution
+This case study explores an AI-assisted intake and triage process that structures requests for support-team review while keeping customer communication under human control.
 
-This workflow uses AI to assist the early stages of ticket review while keeping a person responsible for reviewing customer-facing communication.
+## Proposed workflow
 
 1. A customer submits a request through Google Forms.
-2. Google Forms stores the response in Google Sheets.
+2. Google Forms records the response in a Google Sheet.
 3. The n8n Google Sheets Trigger detects the new row.
-4. Google Gemini analyses the submitted details and returns structured suggestions.
-5. A JavaScript Code node validates and parses the response.
-6. n8n writes the summary, category, sentiment, draft reply and pending status to the support queue.
-7. A support representative reviews the record and draft before responding.
+4. Google Gemini analyses the current incoming ticket using the trigger data.
+5. A JavaScript Code node validates and parses the model's JSON output.
+6. The Google Sheets node writes the mapped AI summary, category, sentiment, draft reply and review status to the support queue.
+7. A support representative reviews the draft before any customer communication is sent.
 
-## Workflow architecture
+## Architecture
 
 ```mermaid
 flowchart TD
-  A[Google Forms] --> B[Google Sheets: form responses]
-  B --> C[n8n: new ticket trigger]
-  C --> D[AI Agent: ticket analysis]
-  G[Google Gemini model] -. model .-> D
-  D --> E[JavaScript: validate and parse JSON]
-  E --> F[Google Sheets: update support queue]
-  F --> H[Human review before customer response]
+    A[Google Forms] --> B[Google Sheets: Form Responses]
+    B --> C[n8n: New Support Ticket]
+    C --> D[AI Agent: Ticket Analysis]
+    G[Google Gemini Chat Model] -. model .-> D
+    D --> E[JavaScript: Validate and Parse JSON]
+    E --> F[Google Sheets: Update Support Queue]
+    F --> H[Human Review]
+    H --> I[Approved Customer Response]
 ```
 
-## Fields produced
+## Current workflow components
 
-| Field | Purpose |
+| Component | Responsibility |
 |---|---|
-| Customer name | Carries the submitted customer name into the processed record |
-| Summary | Concise model-generated description of the issue |
-| Category | Suggested ticket category |
-| Sentiment | Suggested customer sentiment |
-| Draft reply | Response draft for a support representative to review |
-| Status | Set to Pending for human review |
+| Google Forms | Captures support-request details |
+| Google Sheets | Stores form responses and triage fields |
+| n8n | Orchestrates the automation |
+| Google Gemini | Produces an AI-assisted analysis |
+| JavaScript Code node | Validates and parses the model response |
+| Human reviewer | Checks the AI suggestions and approves any response |
 
-The customer's submitted priority is retained as source data. This template does not infer or overwrite priority.
+## Fields produced by the model
 
-## Repository contents
+The current prompt requests:
 
-- `CareFlow Health - AI Ticket Triage & Customer Support Automation.json` — sanitised n8n workflow template.
-- [`docs/architecture.md`](docs/architecture.md) — system components and data flow.
-- [`docs/workflow-review.md`](docs/workflow-review.md) — implementation notes and acceptance checklist.
-- [`docs/data-dictionary.md`](docs/data-dictionary.md) — source and output fields.
-- [`docs/setup-and-handover.md`](docs/setup-and-handover.md) — import and configuration guidance.
-- [`docs/privacy-and-safety.md`](docs/privacy-and-safety.md) — safe sharing and human-review controls.
-- [`tests/test-scenarios.md`](tests/test-scenarios.md) — test cases to run in a test workspace.
-- [`samples/`](samples/) — synthetic example input and output.
-- [`screenshots/`](screenshots/) — workflow and interface visuals.
+- `customer_name`
+- `summary`
+- `category`
+- `priority`
+- `sentiment`
+- `draft_reply`
 
-## Important implementation notes
+The existing sheet schema has columns for AI Summary, AI Category, AI Sentiment, AI Draft Reply and Status, but no separate AI Priority column. The customer-submitted priority is therefore retained as a source field; an AI Priority column should only be added after the sheet schema is deliberately updated.
 
-The workflow export is configured with dynamic prompt expressions and output field mappings. The template still requires environment-specific configuration and a complete end-to-end run in your own n8n workspace. The checklist records what to validate before treating it as operational.
+## Implementation notes
 
-No time-saving, accuracy, satisfaction or cost-reduction metric is claimed for this prototype.
+The public workflow export now uses expressions to read the current trigger item rather than a fixed sample customer. The parsing step checks for empty or malformed model output and missing required fields before the sheet-update node runs. The known AI output fields are mapped to their matching support-queue columns.
 
-## Privacy and safety
+The Google Sheet identifier, selected tab and credential references have been removed from the public export. After importing, reconnect Google Sheets and Gemini credentials and select your own test spreadsheet and form-response tab.
 
-- The workflow export uses placeholders rather than a private Google Sheet ID or saved credential references.
-- Reconnect Google Sheets and Gemini credentials through n8n's credential manager.
-- Use synthetic form submissions for testing and public screenshots.
-- Keep AI-generated summaries and draft replies subject to human review.
-- Do not publish real customer records, credential values or private business data.
+See:
+- [Workflow review and acceptance checklist](docs/workflow-review.md)
+- [Architecture and data flow](docs/architecture.md)
+- [Data dictionary](docs/data-dictionary.md)
+- [Setup and handover](docs/setup-and-handover.md)
+- [Privacy and safe sharing](docs/privacy-and-safety.md)
+- [Test scenarios](tests/test-scenarios.md)
+
+## Screenshots
+
+![CareFlow workflow diagram](screenshots/Careflow-%20Workflow.drawio.png)
+
+- [Google Form intake](screenshots/google-form.JPG)
+- [Google Sheets support queue](screenshots/google-sheet.JPG)
+- [n8n workflow screenshot](screenshots/n8n%20json.JPG)
+
+## Business value
+
+The intended benefits are more structured ticket records, faster initial review, consistent summaries and category suggestions, and draft responses that support agents can edit before sending.
+
+No measured time-saving, accuracy, customer-satisfaction or cost-reduction result is claimed for this prototype. Those outcomes would need to be assessed through a controlled pilot with agreed baseline metrics.
+
+## Future enhancements
+
+- Add a distinct AI Priority field if the support team requires model-suggested priority.
+- Add an explicit human approval step and audit trail.
+- Route malformed output and provider failures to a visible exception queue.
+- Add service-level monitoring and operational reporting.
+- Connect approved tickets to a CRM or help-desk platform.
 
 ## About
 
@@ -80,6 +102,6 @@ Business Analysis · AI Automation · Data Analytics
 
 - [LinkedIn](https://www.linkedin.com/in/oluwaseun-aribisogan)
 - [GitHub](https://github.com/oluwaseun-tech)
-- [Email](mailto:odunayoluwaseun@gmail.com)
+- Email: [odunayoluwaseun@gmail.com](mailto:odunayoluwaseun@gmail.com)
 
-Lagos, Nigeria · Open to international remote opportunities and project collaborations.
+Based in Lagos, Nigeria.
