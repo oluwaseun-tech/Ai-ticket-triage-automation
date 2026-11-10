@@ -57,7 +57,7 @@ The current prompt requests:
 - `sentiment`
 - `draft_reply`
 
-The existing sheet schema has columns for AI Summary, AI Category, AI Sentiment, AI Draft Reply and Status, but no separate AI Priority column. The customer-submitted priority is therefore retained as a source field; an AI Priority column should only be added after the sheet schema is deliberately updated.
+The existing sheet schema has columns for AI Summary, AI Category, AI Sentiment, AI Draft Reply and Status, but no separate AI Priority column. The workflow therefore treats the customer's submitted priority as source data and does not ask the model to generate or overwrite a priority.
 
 ## Implementation notes
 
@@ -89,7 +89,7 @@ No measured time-saving, accuracy, customer-satisfaction or cost-reduction resul
 
 ## Future enhancements
 
-- Add a distinct AI Priority field if the support team requires model-suggested priority.
+- Add a distinct AI Priority field only if the support team later requires a model-suggested priority and the spreadsheet schema is deliberately updated.
 - Add an explicit human approval step and audit trail.
 - Route malformed output and provider failures to a visible exception queue.
 - Add service-level monitoring and operational reporting.
