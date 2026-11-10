@@ -53,7 +53,6 @@ The current prompt requests:
 - `customer_name`
 - `summary`
 - `category`
-- `priority`
 - `sentiment`
 - `draft_reply`
 
